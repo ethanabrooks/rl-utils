@@ -26,11 +26,13 @@ def horz_stack_images(*images, spacing=5, background_color=(0, 0, 0)):
     if len(set([tuple(image.shape) for image in images])) != 1:
         raise Exception('All images must have same shape')
     if images[0].shape[2] != len(background_color):
-        raise Exception('Depth of background color must be the same as depth of image.')
+        raise Exception(
+            'Depth of background color must be the same as depth of image.')
     height = images[0].shape[0]
     width = images[0].shape[1]
     depth = images[0].shape[2]
-    canvas = np.ones([height, width * len(images) + spacing * (len(images) - 1), depth])
+    canvas = np.ones(
+        [height, width * len(images) + spacing * (len(images) - 1), depth])
     bg_color = np.reshape(background_color, [1, 1, depth])
     canvas *= bg_color
     width_pos = 0
@@ -122,15 +124,18 @@ def get_space_attrs(space: gym.Space, attr: str):
         return [get_space_attrs(s, attr) for s in space.spaces]
     raise RuntimeError(f'{space} does not have attribute {attr}.')
 
+
 def get_env_attr(env: gym.Env, attr: str):
     return getattr(unwrap_env(env, lambda e: hasattr(e, attr)), attr)
+
 
 def unwrap_env(env: gym.Env, condition: Callable[[gym.Env], bool]):
     while not condition(env):
         try:
             env = env.env
         except AttributeError:
-            raise RuntimeError(f"env {env} has no children that meet condition.")
+            raise RuntimeError(
+                f"env {env} has no children that meet condition.")
     return env
 
 
