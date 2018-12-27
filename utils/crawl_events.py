@@ -20,13 +20,23 @@ def cli():
     parser.add_argument('--tag', default='reward')
     parser.add_argument('--use-cache', action='store_true')
     parser.add_argument('--quiet', action='store_true')
-    args = parser.parse_args()
+    main(**vars(parser.parse_args()))
+
+
+def main(
+        base_dir: Path,
+        dirs: Path,
+        tag: str,
+        smoothing: int,
+        use_cache: bool,
+        quiet: bool,
+):
     data_points = crawl(
-        dirs=[Path(args.base_dir, d) for d in args.dirs],
-        tag=args.tag,
-        smoothing=args.smoothing,
-        use_cache=args.use_cache,
-        quiet=args.quiet)
+        dirs=[Path(base_dir, d) for d in dirs],
+        tag=tag,
+        smoothing=smoothing,
+        use_cache=use_cache,
+        quiet=quiet)
     print('Sorted lowest to highest:')
     print('*************************')
     for data, event_file in sorted(data_points):
@@ -38,6 +48,10 @@ DataPoint = namedtuple('DataPoint', 'data source')
 
 def crawl(dirs: List[Path], tag: str, smoothing: int, use_cache: bool,
           quiet: bool) -> List[DataPoint]:
+    if not quiet:
+        for directory in dirs:
+            if not directory.exists():
+                print(f'{directory} does not exist')
     event_files = collect_events_files(dirs)
     data_points = []
     for event_file_path in event_files:
@@ -88,4 +102,4 @@ def collect_data(tag: str, event_file_path: Path, n: int) -> Optional[float]:
 
 
 if __name__ == '__main__':
-    clit()
+    cli()
