@@ -2,9 +2,8 @@ import numpy as np
 
 from utils.types import Shape
 
-
 def onehot(idx, num_entries):
-    x = np.zeros(num_entries)
+    x = np.zeros(np.shape(idx) + (num_entries,))
     x[idx] = 1
     return x
 
