@@ -8,5 +8,5 @@ setup(
     version='0.0.0',
     author='Ethan Brooks',
     author_email='ethanabrooks@gmail.com',
-    packages=find_packages(), install_requires=['gym', 'numpy', 'tensorflow']
-)
+    packages=find_packages(),
+    install_requires=['gym', 'numpy', 'tensorflow'])
