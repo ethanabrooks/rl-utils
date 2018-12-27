@@ -19,7 +19,7 @@ def make_network(input_size: int, output_size: int, n_hidden: int, layer_size: i
     sizes = [layer_size] * n_hidden
     activations = [activation] * n_hidden + [None]
     return tf.keras.Sequential([
-        tf.layers.Dense(
+        tf.keras.layers.Dense(
             input_shape=(in_size, ),
             units=out_size,
             activation=activation,
