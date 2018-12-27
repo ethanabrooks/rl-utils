@@ -12,10 +12,10 @@ import tensorflow as tf
 from tensorflow.python.framework.errors_impl import DataLossError
 
 
-def main():
+def cli():
     parser = argparse.ArgumentParser()
     parser.add_argument('dirs', nargs='*', type=Path)
-    parser.add_argument('--base-dir', default='.runs/tensorboard', type=Path)
+    parser.add_argument('--base-dir', default='.runs/log-dir', type=Path)
     parser.add_argument('--smoothing', type=int, default=2000)
     parser.add_argument('--tag', default='reward')
     parser.add_argument('--use-cache', action='store_true')
@@ -41,7 +41,8 @@ def crawl(dirs: List[Path], tag: str, smoothing: int, use_cache: bool,
     event_files = collect_events_files(dirs)
     data_points = []
     for event_file_path in event_files:
-        data = collect_data(tag=tag, event_file_path=event_file_path, n=smoothing)
+        data = collect_data(
+            tag=tag, event_file_path=event_file_path, n=smoothing)
         if data:
             cache_path = Path(event_file_path.parent, f'{smoothing}.{tag}')
             data_points.append((data, event_file_path))
@@ -67,14 +68,16 @@ def collect_data(tag: str, event_file_path: Path, n: int) -> Optional[float]:
     :return: average of last n data-points in events file or None if events file is empty
     """
     try:
-        length = sum(1 for _ in tf.train.summary_iterator(str(event_file_path)))
+        length = sum(
+            1 for _ in tf.train.summary_iterator(str(event_file_path)))
     except DataLossError:
         return None
     iterator = tf.train.summary_iterator(str(event_file_path))
     events = islice(iterator, max(length - n, 0), length)
 
     def get_tag(event):
-        return next((v.simple_value for v in event.summary.value if v.tag == tag), None)
+        return next((v.simple_value
+                     for v in event.summary.value if v.tag == tag), None)
 
     data = (get_tag(e) for e in events)
     data = [d for d in data if d is not None]
@@ -85,4 +88,4 @@ def collect_data(tag: str, event_file_path: Path, n: int) -> Optional[float]:
 
 
 if __name__ == '__main__':
-    main()
+    clit()

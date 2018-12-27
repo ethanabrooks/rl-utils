@@ -20,7 +20,7 @@ def cmd(args, fail_ok=False, cwd=None):
     return stdout.strip()
 
 
-def main():
+def cli():
     parser = argparse.ArgumentParser()
     parser.add_argument('port', type=int)
     parser.add_argument('path', type=Path)
@@ -45,4 +45,4 @@ def tb(port: int, path: Path, logdir: Path):
 
 
 if __name__ == '__main__':
-    main()
+    cli()

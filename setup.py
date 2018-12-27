@@ -9,4 +9,9 @@ setup(
     author='Ethan Brooks',
     author_email='ethanabrooks@gmail.com',
     packages=find_packages(),
-    install_requires=['gym', 'numpy', 'tensorflow'])
+    install_requires=['gym', 'numpy', 'tensorflow'],
+    entry_points=dict(console_scripts=[
+        'tb=utils.tb:cli',
+        'crawl=utils.crawl_events:cli',
+    ]),
+)
