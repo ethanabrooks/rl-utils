@@ -4,10 +4,9 @@ from utils.types import Shape
 
 
 def onehot(idx, num_entries):
-    x = np.zeros(np.shape(idx) + (num_entries,))
-    ix = np.meshgrid(*[range(i) for i in np.shape(idx)],
-                     indexing='ij')
-    x[tuple(ix) + (idx,)] = 1
+    x = np.zeros(np.shape(idx) + (num_entries, ))
+    ix = np.meshgrid(*[range(i) for i in np.shape(idx)], indexing='ij')
+    x[tuple(ix) + (idx, )] = 1
     return x
 
 
