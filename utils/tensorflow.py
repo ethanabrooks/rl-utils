@@ -24,9 +24,9 @@ def make_network(input_size: int, output_size: int, n_hidden: int, layer_size: i
             units=out_size,
             activation=activation,
             use_bias=use_bias) for in_size, out_size, activation in zip(
-            [input_size] + sizes,
-            sizes + [output_size],
-            activations,
+                [input_size] + sizes,
+                sizes + [output_size],
+                activations,
             )
     ])
 
