@@ -4,3 +4,4 @@ from utils.gym import *
 from utils.numpy import *
 from utils.tensorflow import *
 from utils.types import *
+from utils.replay_buffer import *

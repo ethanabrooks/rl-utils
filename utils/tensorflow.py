@@ -13,7 +13,7 @@ def create_sess(debug=False):
 
 
 def make_network(input_size: int, output_size: int, n_hidden: int, layer_size: int,
-                 activation, use_bias=True) \
+                 activation, use_bias=True, name='fc') \
         -> \
                 tf.keras.Sequential:
     sizes = [layer_size] * n_hidden
@@ -23,11 +23,14 @@ def make_network(input_size: int, output_size: int, n_hidden: int, layer_size: i
             input_shape=(in_size, ),
             units=out_size,
             activation=activation,
-            use_bias=use_bias) for in_size, out_size, activation in zip(
+            use_bias=use_bias,
+            name=f'{name}{i}')
+        for i, (in_size, out_size, activation) in enumerate(
+            zip(
                 [input_size] + sizes,
                 sizes + [output_size],
                 activations,
-            )
+            ))
     ])
 
 
