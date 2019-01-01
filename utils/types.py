@@ -16,5 +16,3 @@ class Step(namedtuple('Step', 'o1 a r o2 t')):
 
 
 ArrayLike = Union[np.ndarray, list]
-
-

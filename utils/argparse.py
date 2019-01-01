@@ -1,11 +1,11 @@
 import argparse
-import re
 from itertools import filterfalse
+import re
 from typing import Tuple
 
+from gym import spaces
 import numpy as np
 import tensorflow as tf
-from gym import spaces
 
 from utils.tensorflow import parametric_relu
 
@@ -18,10 +18,15 @@ def parse_groups(parser: argparse.ArgumentParser):
 
     def parse_group(group):
         # noinspection PyProtectedMember
-        return {a.dest: getattr(args, a.dest, None) for a in group._group_actions}
+        return {
+            a.dest: getattr(args, a.dest, None)
+            for a in group._group_actions
+        }
 
     # noinspection PyUnresolvedReferences,PyProtectedMember
-    groups = [g for g in parser._action_groups if g.title != 'positional arguments']
+    groups = [
+        g for g in parser._action_groups if g.title != 'positional arguments'
+    ]
     optional = filter(is_optional, groups)
     not_optional = filterfalse(is_optional, groups)
 
@@ -48,8 +53,9 @@ def parse_space(dim: int):
         regex = re.compile('\((-?[\.\d]+),(-?[\.\d]+)\)')
         matches = regex.findall(arg)
         if len(matches) != dim:
-            raise argparse.ArgumentTypeError(f'Arg {arg} must have {dim} substrings '
-                                             f'matching pattern {regex}.')
+            raise argparse.ArgumentTypeError(
+                f'Arg {arg} must have {dim} substrings '
+                f'matching pattern {regex}.')
         return make_box(*matches)
 
     return _parse_space
@@ -59,8 +65,9 @@ def parse_vector(length: int, delim: str):
     def _parse_vector(arg: str):
         vector = tuple(map(float, arg.split(delim)))
         if len(vector) != length:
-            raise argparse.ArgumentError(f'Arg {arg} must include {length} float values'
-                                         f'delimited by "{delim}".')
+            raise argparse.ArgumentError(
+                f'Arg {arg} must include {length} float values'
+                f'delimited by "{delim}".')
         return vector
 
     return _parse_vector

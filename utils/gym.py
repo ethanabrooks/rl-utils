@@ -1,8 +1,8 @@
 from typing import Callable, Iterable, Tuple
 
 import gym
-import numpy as np
 from gym import spaces
+import numpy as np
 
 
 def get_env_attr(env: gym.Env, attr: str):
@@ -14,7 +14,8 @@ def unwrap_env(env: gym.Env, condition: Callable[[gym.Env], bool]):
         try:
             env = env.env
         except AttributeError:
-            raise RuntimeError(f"env {env} has no children that meet condition.")
+            raise RuntimeError(
+                f"env {env} has no children that meet condition.")
     return env
 
 

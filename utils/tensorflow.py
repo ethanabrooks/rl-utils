@@ -24,14 +24,12 @@ def make_network(input_size: int, output_size: int, n_hidden: int, layer_size: i
             units=out_size,
             activation=activation,
             name=f'{name}{i}',
-            **kwargs
-        )
-        for i, (in_size, out_size, activation) in enumerate(
-            zip(
-                [input_size] + sizes,
-                sizes + [output_size],
-                activations,
-            ))
+            **kwargs) for i, (in_size, out_size, activation) in enumerate(
+                zip(
+                    [input_size] + sizes,
+                    sizes + [output_size],
+                    activations,
+                ))
     ])
 
 
