@@ -5,9 +5,6 @@ from typing import Tuple
 
 from gym import spaces
 import numpy as np
-import tensorflow as tf
-
-from utils.tensorflow import parametric_relu
 
 
 def parse_groups(parser: argparse.ArgumentParser):
@@ -77,17 +74,23 @@ def cast_to_int(arg: str):
     return int(float(arg))
 
 
-ACTIVATIONS = dict(
-    relu=tf.nn.relu,
-    leaky=tf.nn.leaky_relu,
-    elu=tf.nn.elu,
-    selu=tf.nn.selu,
-    prelu=parametric_relu,
-    sigmoid=tf.sigmoid,
-    tanh=tf.tanh,
-    none=None,
-)
+try:
+    import tensorflow as tf
+    from utils.tensorflow import parametric_relu
+
+    ACTIVATIONS = dict(
+        relu=tf.nn.relu,
+        leaky=tf.nn.leaky_relu,
+        elu=tf.nn.elu,
+        selu=tf.nn.selu,
+        prelu=parametric_relu,
+        sigmoid=tf.sigmoid,
+        tanh=tf.tanh,
+        none=None,
+    )
 
 
-def parse_activation(arg: str):
-    return ACTIVATIONS[arg]
+    def parse_activation(arg: str):
+        return ACTIVATIONS[arg]
+except ImportError:
+    pass
