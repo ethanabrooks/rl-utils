@@ -29,7 +29,7 @@ def get_space_attrs(space: gym.Space, attr: str):
     raise RuntimeError(f'{space} does not have attribute {attr}.')
 
 
-def concat_spaces(spaces: Iterable[gym.Space], axis: int):
+def concat_spaces(spaces: Iterable[gym.Space], axis: int = -1):
     def get_high_or_low(space: gym.Space, high: bool):
         if isinstance(space, gym.spaces.Box):
             return space.high if high else space.low
