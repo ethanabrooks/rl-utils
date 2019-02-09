@@ -56,6 +56,8 @@ def space_shape(space: gym.Space):
         return {k: space_shape(v) for k, v in space.spaces.items()}
     if isinstance(space, gym.spaces.Tuple):
         return tuple(space_shape(s) for s in space.spaces)
+    if isinstance(space, gym.spaces.Discrete):
+        return (space.n, )
     raise NotImplementedError
 
 
