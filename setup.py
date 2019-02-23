@@ -14,5 +14,6 @@ setup(
     entry_points=dict(console_scripts=[
         'tb=utils.tb:cli',
         'crawl=utils.crawl_events:cli',
+        'plot=utils.plot:cli',
     ]),
 )
