@@ -5,6 +5,6 @@ from utils.numpy import *
 from utils.types import *
 from utils.replay_buffer import *
 try:
-    from utils.tensorflow import *
+    from utils.tf import *
 except ImportError:
     pass

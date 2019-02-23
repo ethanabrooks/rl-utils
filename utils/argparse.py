@@ -76,7 +76,7 @@ def cast_to_int(arg: str):
 
 try:
     import tensorflow as tf
-    from utils.tensorflow import parametric_relu
+    from utils.tf import parametric_relu
 
     ACTIVATIONS = dict(
         relu=tf.nn.relu,
