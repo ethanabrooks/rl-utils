@@ -3,13 +3,13 @@
 # stdlib
 import argparse
 from pathlib import Path
-from typing import Optional, List
+from typing import List, Optional
 
 # third party
-import tensorflow as tf
-import seaborn as sns
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import tensorflow as tf
 
 
 def cli():
@@ -17,8 +17,7 @@ def cli():
     parser.add_argument('--names', nargs='*', type=Path)
     parser.add_argument('--paths', nargs='*', type=Path)
     parser.add_argument('--base-dir', default='.runs/logdir', type=Path)
-    parser.add_argument('--x-tag', default='reward')
-    parser.add_argument('--y-tag', default='time-step')
+    parser.add_argument('--tag', default='return')
     parser.add_argument('--quiet', action='store_true')
     main(**vars(parser.parse_args()))
 
@@ -26,8 +25,8 @@ def cli():
 def main(
         names: List[str],
         paths: List[Path],
-        x_tag: str,
-        y_tag: str,
+        tag: str,
+        base_dir: Path,
         quiet: bool,
 ):
     def get_tags():
@@ -36,19 +35,18 @@ def main(
                 if not quiet:
                     print(f'{path} does not exist')
 
-            for event_path in path.glob('**/events*'):
+            for event_path in Path(base_dir, path).glob('**/events*'):
                 iterator = tf.train.summary_iterator(str(event_path))
                 for event in iterator:
+                    value = event.summary.value
+                    if value:
+                        if value[0].tag == tag:
+                            value = value[0].simple_value
+                            yield event.step, value, name
 
-                    def get_tags(tag_name):
-                        for value in event.summary.value:
-                            if value.tag == tag_name:
-                                yield value
-
-                    yield next(zip(get_tags(x_tag), get_tags(y_tag)), name)
-
-    sns.lineplot(x=x_tag, y=y_tag, hue='name', data=(pd.DataFrame(get_tags())))
-    plt.savefig()
+    data = pd.DataFrame(get_tags())
+    sns.lineplot(x=0, y=1, hue=2, data=data)
+    plt.savefig('plot')
 
 
 if __name__ == '__main__':
