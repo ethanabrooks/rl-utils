@@ -19,6 +19,7 @@ def cli():
     parser.add_argument('--base-dir', default='.runs/logdir', type=Path)
     parser.add_argument('--tag', default='return')
     parser.add_argument('--quiet', action='store_true')
+    parser.add_argument('--limit', type=int)
     main(**vars(parser.parse_args()))
 
 
@@ -27,6 +28,7 @@ def main(
         paths: List[Path],
         tag: str,
         base_dir: Path,
+        limit: Optional[int],
         quiet: bool,
 ):
     def get_tags():
@@ -43,7 +45,8 @@ def main(
                     if value:
                         if value[0].tag == tag:
                             value = value[0].simple_value
-                            yield event.step, value, name
+                            if limit is None or event.step < limit:
+                                yield event.step, value, name
 
     data = pd.DataFrame(get_tags())
     sns.lineplot(x=0, y=1, hue=2, data=data)
