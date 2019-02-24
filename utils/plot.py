@@ -31,11 +31,12 @@ def main(
 ):
     def get_tags():
         for name, path in zip(names, paths):
+            path = Path(base_dir, path)
             if not path.exists():
                 if not quiet:
                     print(f'{path} does not exist')
 
-            for event_path in Path(base_dir, path).glob('**/events*'):
+            for event_path in path.glob('**/events*'):
                 iterator = tf.train.summary_iterator(str(event_path))
                 for event in iterator:
                     value = event.summary.value
