@@ -20,6 +20,9 @@ def cli():
     parser.add_argument('--tag', default='return')
     parser.add_argument('--quiet', action='store_true')
     parser.add_argument('--limit', type=int)
+    parser.add_argument('--fname', type=str, default='plot')
+    parser.add_argument('--quality', type=int)
+    parser.add_argument('--dpi', type=int)
     main(**vars(parser.parse_args()))
 
 
@@ -30,6 +33,7 @@ def main(
         base_dir: Path,
         limit: Optional[int],
         quiet: bool,
+        **kwargs,
 ):
     def get_tags():
         for name, path in zip(names, paths):
@@ -48,9 +52,11 @@ def main(
                             if limit is None or event.step < limit:
                                 yield event.step, value, name
 
-    data = pd.DataFrame(get_tags())
-    sns.lineplot(x=0, y=1, hue=2, data=data)
-    plt.savefig('plot')
+    data = pd.DataFrame(get_tags(), columns=['step', tag, 'run'])
+    sns.lineplot(x='step', y=tag, hue='run', data=data)
+    plt.legend(data['run'].unique())
+    plt.axes().ticklabel_format(style='sci', scilimits=(0, 0), axis='x')
+    plt.savefig(**kwargs)
 
 
 if __name__ == '__main__':
