@@ -22,7 +22,7 @@ def cli():
     parser.add_argument('--limit', type=int)
     parser.add_argument('--fname', type=str, default='plot')
     parser.add_argument('--quality', type=int)
-    parser.add_argument('--dpi', type=int)
+    parser.add_argument('--dpi', type=int, default=256)
     main(**vars(parser.parse_args()))
 
 
