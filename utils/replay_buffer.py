@@ -51,6 +51,9 @@ class ReplayBuffer:
                             0 if key.stop is None else key.stop, key.step)
         return (key + self.pos) % self.maxlen
 
+    def array(self):
+        return self[-len(self): 0].values
+
     def sample(self, batch_size: int, seq_len: int = None):
         # indices are negative because indices are relative to pos
         indices = np.random.randint(
