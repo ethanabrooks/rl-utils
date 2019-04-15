@@ -20,7 +20,8 @@ def cmd(args, fail_ok=False, cwd=None):
 
 
 def cli():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('port', type=int)
     parser.add_argument('path', type=Path)
     parser.add_argument('--logdir', type=Path, default=Path('.runs/logdir'))

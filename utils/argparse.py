@@ -1,13 +1,14 @@
 import argparse
 from itertools import filterfalse
 import re
-from typing import Tuple, List
+from typing import List, Tuple
 
 from gym import spaces
 import numpy as np
 
 
-def hierarchical_parse_args(parser: argparse.ArgumentParser, include_positional=False):
+def hierarchical_parse_args(parser: argparse.ArgumentParser,
+                            include_positional=False):
     """
     :return:
     {
@@ -35,8 +36,7 @@ def hierarchical_parse_args(parser: argparse.ArgumentParser, include_positional=
             if group.title != 'positional arguments':
                 children = key_value_pairs(group)
                 descendants = get_nonpositionals(group._action_groups)
-                yield group.title, {**dict(children),
-                                    **dict(descendants)}
+                yield group.title, {**dict(children), **dict(descendants)}
 
     positional = list(get_positionals(parser._action_groups))
     nonpositional = dict(get_nonpositionals(parser._action_groups))
@@ -102,7 +102,6 @@ try:
         tanh=tf.tanh,
         none=None,
     )
-
 
     def parse_activation(arg: str):
         return ACTIVATIONS[arg]

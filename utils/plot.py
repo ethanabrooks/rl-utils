@@ -7,13 +7,15 @@ from typing import List, Optional
 
 # third party
 import matplotlib.pyplot as plt
+import tensorflow as tf
+
 import pandas as pd
 import seaborn as sns
-import tensorflow as tf
 
 
 def cli():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--names', nargs='*', type=Path)
     parser.add_argument('--paths', nargs='*', type=Path)
     parser.add_argument('--base-dir', default='.runs/logdir', type=Path)

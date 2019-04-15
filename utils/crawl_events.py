@@ -13,13 +13,15 @@ from tensorflow.python.framework.errors_impl import DataLossError
 
 
 def cli():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('dirs', nargs='*', type=Path)
-    parser.add_argument('--base-dir', default='.runs/logdir', type=Path)
-    parser.add_argument('--smoothing', type=int, default=2000)
-    parser.add_argument('--tag', default='reward')
-    parser.add_argument('--use-cache', action='store_true')
-    parser.add_argument('--quiet', action='store_true')
+    parser.add_argument(
+        '--base-dir', default='.runs/logdir', type=Path, help=' ')
+    parser.add_argument('--smoothing', type=int, default=2000, help=' ')
+    parser.add_argument('--tag', default='reward', help=' ')
+    parser.add_argument('--use-cache', action='store_true', help=' ')
+    parser.add_argument('--quiet', action='store_true', help=' ')
     main(**vars(parser.parse_args()))
 
 
