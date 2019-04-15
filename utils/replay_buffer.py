@@ -52,6 +52,8 @@ class ReplayBuffer:
         return (key + self.pos) % self.maxlen
 
     def array(self):
+        if self.buffer is None:
+            return np.empty(0)
         return self[-len(self): 0].values
 
     def sample(self, batch_size: int, seq_len: int = None):
