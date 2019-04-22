@@ -7,10 +7,9 @@ from typing import List, Optional
 
 # third party
 import matplotlib.pyplot as plt
-import tensorflow as tf
-
 import pandas as pd
 import seaborn as sns
+import tensorflow as tf
 
 
 def cli():
@@ -45,6 +44,7 @@ def main(
                     print(f'{path} does not exist')
 
             for event_path in path.glob('**/events*'):
+                print('Plotting', event_path)
                 iterator = tf.train.summary_iterator(str(event_path))
                 for event in iterator:
                     value = event.summary.value
