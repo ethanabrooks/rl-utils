@@ -1,6 +1,6 @@
 import numpy as np
 
-from utils.types import Shape
+from rl_utils.types import Shape
 
 
 def onehot(idx, num_entries):

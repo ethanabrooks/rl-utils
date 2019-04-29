@@ -90,7 +90,7 @@ def cast_to_int(arg: str):
 
 try:
     import tensorflow as tf
-    from utils.tf import parametric_relu
+    from rl_utils.tf import parametric_relu
 
     ACTIVATIONS = dict(
         relu=tf.nn.relu,
