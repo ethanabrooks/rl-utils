@@ -12,8 +12,8 @@ setup(
     install_requires=['gym', 'numpy'],
     extra_requires=dict(tensorflow='tensorflow'),
     entry_points=dict(console_scripts=[
-        'tb=utils.tb:cli',
-        'crawl=utils.crawl_events:cli',
-        'plot=utils.plot:cli',
+        'tb=rl_utils.tb:cli',
+        'crawl=rl_utils.crawl_events:cli',
+        'plot=rl_utils.plot:cli',
     ]),
 )
