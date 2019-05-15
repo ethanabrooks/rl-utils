@@ -3,10 +3,19 @@ import numpy as np
 from rl_utils.types import Shape
 
 
+def cartesian_product(*arrays):
+    la = len(arrays)
+    dtype = np.result_type(*arrays)
+    arr = np.empty([len(a) for a in arrays] + [la], dtype=dtype)
+    for i, a in enumerate(np.ix_(*arrays)):
+        arr[..., i] = a
+    return arr.reshape(-1, la)
+
+
 def onehot(idx, num_entries):
-    x = np.zeros(np.shape(idx) + (num_entries, ))
+    x = np.zeros(np.shape(idx) + (num_entries,))
     ix = np.meshgrid(*[range(i) for i in np.shape(idx)], indexing='ij')
-    x[tuple(ix) + (idx, )] = 1
+    x[tuple(ix) + (idx,)] = 1
     return x
 
 
