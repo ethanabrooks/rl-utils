@@ -4,6 +4,11 @@ from rl_utils.types import Shape
 
 
 def cartesian_product(*arrays):
+    """
+    https://stackoverflow.com/questions/11144513/numpy-cartesian-product-of-x-and-y-array-points-into-single
+    -array-of-2d-points
+    senderle's answer
+    """
     la = len(arrays)
     dtype = np.result_type(*arrays)
     arr = np.empty([len(a) for a in arrays] + [la], dtype=dtype)
