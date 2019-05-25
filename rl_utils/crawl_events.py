@@ -19,7 +19,7 @@ def cli():
     parser.add_argument(
         '--base-dir', default='.runs/logdir', type=Path, help=' ')
     parser.add_argument('--smoothing', type=int, default=2000, help=' ')
-    parser.add_argument('--tag', default='reward', help=' ')
+    parser.add_argument('--tag', default='return', help=' ')
     parser.add_argument('--use-cache', action='store_true', help=' ')
     parser.add_argument('--quiet', action='store_true', help=' ')
     main(**vars(parser.parse_args()))
