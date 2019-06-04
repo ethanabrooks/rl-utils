@@ -2,6 +2,7 @@
 
 # stdlib
 import argparse
+import itertools
 from collections import namedtuple
 from itertools import islice
 from pathlib import Path
@@ -22,6 +23,8 @@ def cli():
     parser.add_argument('--tag', default='reward', help=' ')
     parser.add_argument('--use-cache', action='store_true', help=' ')
     parser.add_argument('--quiet', action='store_true', help=' ')
+    parser.add_argument('--until-time', type=int, help=' ')
+    parser.add_argument('--until-step', type=int, help=' ')
     main(**vars(parser.parse_args()))
 
 
@@ -32,75 +35,69 @@ def main(
         smoothing: int,
         use_cache: bool,
         quiet: bool,
+        until_time: int,
+        until_step: int,
 ):
-    data_points = crawl(
-        dirs=[Path(base_dir, d) for d in dirs],
-        tag=tag,
-        smoothing=smoothing,
-        use_cache=use_cache,
-        quiet=quiet)
+    def get_event_files():
+        for dir in dirs:
+            yield from Path(base_dir, dir).glob('**/events*')
+
+    def get_values(path):
+        start_time = None
+        iterator = tf.train.summary_iterator(str(path))
+        while True:
+            try:
+                event = next(iterator)
+                if start_time is None:
+                    start_time = event.wall_time
+                if until_time is not None and \
+                        event.wall_time - start_time > until_time:
+                    return
+                if until_step is not None and event.step > until_step:
+                    return
+                for value in event.summary.value:
+                    if value.tag == tag:
+                        yield value.simple_value
+            except DataLossError:
+                pass
+            except StopIteration:
+                return
+
+    def get_iterators(path):
+        length = sum(1 for _ in get_values(path))
+        n_iterators = max(1, length - smoothing)
+        iterators = itertools.tee(get_values(path), n_iterators)
+        for i, iterator in enumerate(iterators):
+            for _ in range(i):
+                next(iterator)  # each iterator has a different successive start point
+                yield itertools.islice(iterator, smoothing)
+
+    def get_averages():
+        for path in get_event_files():
+            for iterator in get_iterators(path):
+                iterator, copy = itertools.tee(iterator)
+                total = sum(1 for _ in copy)
+                if total > 0:
+                    yield path, sum(iterator) / total
+                else:
+                    yield None
+
     print('Sorted lowest to highest:')
     print('*************************')
-    for data, event_file in sorted(data_points):
-        print('{:10}: {}'.format(data, event_file))
-
-
-DataPoint = namedtuple('DataPoint', 'data source')
-
-
-def crawl(dirs: List[Path], tag: str, smoothing: int, use_cache: bool,
-          quiet: bool) -> List[DataPoint]:
-    if not quiet:
-        for directory in dirs:
-            if not directory.exists():
-                print(f'{directory} does not exist')
-    event_files = collect_events_files(dirs)
-    data_points = []
-    for event_file_path in event_files:
-        data = collect_data(
-            tag=tag, event_file_path=event_file_path, n=smoothing)
-        if data:
-            cache_path = Path(event_file_path.parent, f'{smoothing}.{tag}')
-            data_points.append((data, event_file_path))
+    for path, data in sorted(get_averages()):
+        if data is not None:
+            cache_path = Path(path.parent, f'{smoothing}.{tag}')
             if not use_cache or not cache_path.exists():
                 if not quiet:
                     print(f'Writing {cache_path}...')
                 with cache_path.open('w') as f:
                     f.write(str(data))
-        elif not quiet:
-            print('Tag not found')
-    return data_points
 
-
-def collect_events_files(dirs):
-    pattern = '**/events*'
-    return [path for d in dirs for path in d.glob(pattern)]
-
-
-def collect_data(tag: str, event_file_path: Path, n: int) -> Optional[float]:
-    """
-    :param event_file_path: path to events file
-    :param n: number of data points to average
-    :return: average of last n data-points in events file or None if events file is empty
-    """
-    try:
-        length = sum(
-            1 for _ in tf.train.summary_iterator(str(event_file_path)))
-    except DataLossError:
-        return None
-    iterator = tf.train.summary_iterator(str(event_file_path))
-    events = islice(iterator, max(length - n, 0), length)
-
-    def get_tag(event):
-        return next((v.simple_value
-                     for v in event.summary.value if v.tag == tag), None)
-
-    data = (get_tag(e) for e in events)
-    data = [d for d in data if d is not None]
-    try:
-        return sum(data) / len(data)
-    except ZeroDivisionError:
-        return None
+        if not quiet:
+            if data is None:
+                print('No data found in', path)
+            else:
+                print('{:10}: {}'.format(data, path))
 
 
 if __name__ == '__main__':
