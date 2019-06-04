@@ -19,10 +19,13 @@ def cli():
     parser.add_argument('dirs', nargs='*', type=Path)
     parser.add_argument(
         '--base-dir', default='.runs/logdir', type=Path, help=' ')
-    parser.add_argument('--smoothing', type=int, default=2000, help=' ')
+    parser.add_argument('--smoothing', type=int, default=10, help=' ')
     parser.add_argument('--tag', default='return', help=' ')
-    parser.add_argument('--use-cache', action='store_true', help=' ')
+    parser.add_argument(
+        '--no-cache-write', dest='write_cache', action='store_false', help=' ')
     parser.add_argument('--quiet', action='store_true', help=' ')
+    parser.add_argument('--report-num-values', action='store_true', help=' ')
+    parser.add_argument('--report-cache-writes', action='store_true', help=' ')
     parser.add_argument('--until-time', type=int, help=' ')
     parser.add_argument('--until-step', type=int, help=' ')
     main(**vars(parser.parse_args()))
@@ -33,7 +36,9 @@ def main(
         dirs: Path,
         tag: str,
         smoothing: int,
-        use_cache: bool,
+        write_cache: bool,
+        report_num_values: bool,
+        report_cache_writes: bool,
         quiet: bool,
         until_time: int,
         until_step: int,
@@ -45,7 +50,7 @@ def main(
     def get_values(path):
         start_time = None
         iterator = tf.train.summary_iterator(str(path))
-        while True:
+        for i in itertools.count():
             try:
                 event = next(iterator)
                 if start_time is None:
@@ -59,41 +64,40 @@ def main(
                     if value.tag == tag:
                         yield value.simple_value
             except DataLossError:
-                pass
+                if not quiet:
+                    print('Data loss in', path)
             except StopIteration:
                 return
 
-    def get_iterators(path):
-        length = sum(1 for _ in get_values(path))
-        n_iterators = max(1, length - smoothing)
-        iterators = itertools.tee(get_values(path), n_iterators)
-        for i, iterator in enumerate(iterators):
-            for _ in range(i):
-                next(iterator)  # each iterator has a different successive start point
-                yield itertools.islice(iterator, smoothing)
-
     def get_averages():
         for path in get_event_files():
-            for iterator in get_iterators(path):
-                iterator, copy = itertools.tee(iterator)
-                total = sum(1 for _ in copy)
-                if total > 0:
-                    yield path, sum(iterator) / total
-                else:
-                    yield None
+            iterator = get_values(path)
+            num_values = sum(1 for _ in get_values(path))
+            if report_num_values:
+                print(f'Read {num_values} in {path}.')
+            length = min(num_values,
+                         smoothing)  # amount of data to actually use
+            iterator = itertools.islice(iterator, num_values - length,
+                                        num_values)
+            if length > 0:
+                yield sum(iterator) / length, path
+            else:
+                yield None
 
-    print('Sorted lowest to highest:')
-    print('*************************')
-    for path, data in sorted(get_averages()):
+    averages = list(get_averages())
+    for data, path in averages:
         if data is not None:
             cache_path = Path(path.parent, f'{smoothing}.{tag}')
-            if not use_cache or not cache_path.exists():
-                if not quiet:
+            if write_cache:
+                if report_cache_writes:
                     print(f'Writing {cache_path}...')
                 with cache_path.open('w') as f:
                     f.write(str(data))
 
-        if not quiet:
+    if not quiet:
+        print('Sorted lowest to highest:')
+        print('*************************')
+        for data, path in sorted(averages):
             if data is None:
                 print('No data found in', path)
             else:
