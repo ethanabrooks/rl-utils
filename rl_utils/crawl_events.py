@@ -84,15 +84,14 @@ def main(
             else:
                 yield None
 
-    averages = list(get_averages())
+    averages = [x for x in get_averages() if x is not None]
     for data, path in averages:
-        if data is not None:
-            cache_path = Path(path.parent, f'{smoothing}.{tag}')
-            if write_cache:
-                if show_cache_writes:
-                    print(f'Writing {cache_path}...')
-                with cache_path.open('w') as f:
-                    f.write(str(data))
+        cache_path = Path(path.parent, f'{smoothing}.{tag}')
+        if write_cache:
+            if show_cache_writes:
+                print(f'Writing {cache_path}...')
+            with cache_path.open('w') as f:
+                f.write(str(data))
 
     if not quiet:
         print('Sorted lowest to highest:')
