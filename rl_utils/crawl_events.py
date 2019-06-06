@@ -24,8 +24,8 @@ def cli():
     parser.add_argument(
         '--no-cache-write', dest='write_cache', action='store_false', help=' ')
     parser.add_argument('--quiet', action='store_true', help=' ')
-    parser.add_argument('--report-num-values', action='store_true', help=' ')
-    parser.add_argument('--report-cache-writes', action='store_true', help=' ')
+    parser.add_argument('--show-num-values', action='store_true', help=' ')
+    parser.add_argument('--show-cache-writes', action='store_true', help=' ')
     parser.add_argument('--until-time', type=int, help=' ')
     parser.add_argument('--until-step', type=int, help=' ')
     main(**vars(parser.parse_args()))
@@ -37,8 +37,8 @@ def main(
         tag: str,
         smoothing: int,
         write_cache: bool,
-        report_num_values: bool,
-        report_cache_writes: bool,
+        show_num_values: bool,
+        show_cache_writes: bool,
         quiet: bool,
         until_time: int,
         until_step: int,
@@ -73,7 +73,7 @@ def main(
         for path in get_event_files():
             iterator = get_values(path)
             num_values = sum(1 for _ in get_values(path))
-            if report_num_values:
+            if show_num_values:
                 print(f'Read {num_values} in {path}.')
             length = min(num_values,
                          smoothing)  # amount of data to actually use
@@ -89,7 +89,7 @@ def main(
         if data is not None:
             cache_path = Path(path.parent, f'{smoothing}.{tag}')
             if write_cache:
-                if report_cache_writes:
+                if show_cache_writes:
                     print(f'Writing {cache_path}...')
                 with cache_path.open('w') as f:
                     f.write(str(data))
