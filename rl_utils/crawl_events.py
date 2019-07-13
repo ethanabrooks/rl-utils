@@ -20,7 +20,7 @@ def cli():
     parser.add_argument("dirs", nargs="*", type=Path)
     parser.add_argument("--base-dir", default=".runs/logdir", type=Path, help=" ")
     parser.add_argument("--smoothing", type=int, default=10, help=" ")
-    parser.add_argument("--tag", default="return", help=" ")
+    parser.add_argument("--tag", default="success", help=" ")
     parser.add_argument(
         "--no-cache-write", dest="write_cache", action="store_false", help=" "
     )
