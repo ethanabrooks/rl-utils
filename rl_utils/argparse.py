@@ -88,22 +88,3 @@ def cast_to_int(arg: str):
     return int(float(arg))
 
 
-try:
-    import tensorflow as tf
-    from rl_utils.tf import parametric_relu
-
-    ACTIVATIONS = dict(
-        relu=tf.nn.relu,
-        leaky=tf.nn.leaky_relu,
-        elu=tf.nn.elu,
-        selu=tf.nn.selu,
-        prelu=parametric_relu,
-        sigmoid=tf.sigmoid,
-        tanh=tf.tanh,
-        none=None,
-    )
-
-    def parse_activation(arg: str):
-        return ACTIVATIONS[arg]
-except ImportError:
-    pass
