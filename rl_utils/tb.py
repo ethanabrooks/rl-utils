@@ -6,16 +6,19 @@ from pathlib import Path
 import subprocess
 
 
-def cmd(args, fail_ok=False, cwd=None):
+def cmd(args, print_cmd=False, fail_ok=False, cwd=None):
     process = subprocess.Popen(
         args,
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE,
         cwd=cwd,
         universal_newlines=True)
+    cmd_string = ' '.join(args)
+    if print_cmd:
+        print(cmd_string)
     stdout, stderr = process.communicate(timeout=1)
     if stderr and not fail_ok:
-        raise RuntimeError(f"Command `{' '.join(args)}` failed: {stderr}")
+        raise RuntimeError(f"Command `{cmd_string}` failed: {stderr}")
     return stdout.strip()
 
 
@@ -37,10 +40,11 @@ def tb(port: int, path: Path, logdir: Path):
     command = f'tensorboard --logdir={logdir} --port={port}'
     if session_name in active_sessions:
         window_name = f'{session_name}:0'
-        cmd(['tmux', 'respawn-window', '-t', window_name, '-k', command])
+        cmd(['tmux', 'respawn-window', '-t', window_name, '-k', command],
+                print_cmd=True)
         print(f'Respawned {window_name} window.')
     else:
-        cmd(['tmux', 'new', '-d', '-s', session_name, command])
+        cmd(['tmux', 'new', '-d', '-s', session_name, command], print_cmd=True)
         print(f'Created new session called {session_name}.')
 
 
