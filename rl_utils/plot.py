@@ -58,7 +58,7 @@ def main(
                     print(f"{path} does not exist")
 
             for event_path in path.glob("**/events*"):
-                print("Plotting", event_path)
+                print("Reading", event_path)
                 iterator = tf.train.summary_iterator(str(event_path))
                 while True:
                     try:
@@ -72,6 +72,7 @@ def main(
                     except (StopIteration, DataLossError):
                         pass
 
+    print("Plotting...")
     header = tags[0] if len(tags) == 1 else ""
     data = pd.DataFrame(get_tags(), columns=["step", header, "run"])
     sns.lineplot(x="step", y=header, hue="run", data=data)
