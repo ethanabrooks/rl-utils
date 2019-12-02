@@ -11,7 +11,6 @@ import pandas as pd
 import seaborn as sns
 import tensorflow as tf
 from tensorflow.python.framework.errors_impl import DataLossError
-from tqdm import tqdm
 
 
 def cli():
@@ -61,8 +60,6 @@ def main(
             for event_path in path.glob("**/events*"):
                 print("Plotting", event_path)
                 iterator = tf.train.summary_iterator(str(event_path))
-                if limit is not None:
-                    iterator = tqdm(iterable=iterator, total=limit, desc=name)
                 while True:
                     try:
                         event = next(iterator)
