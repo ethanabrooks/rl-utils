@@ -69,8 +69,11 @@ def main(
                                 value = value[0].simple_value
                                 if limit is None or event.step < limit:
                                     yield event.step, value, name
-                    except (StopIteration, DataLossError):
+                    except DataLossError:
                         pass
+                    except StopIteration:
+                        break
+
 
     print("Plotting...")
     header = tags[0] if len(tags) == 1 else ""
