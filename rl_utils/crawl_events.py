@@ -11,6 +11,7 @@ from typing import List, Optional
 # third party
 import tensorflow as tf
 from tensorflow.python.framework.errors_impl import DataLossError
+import tensorflow.compat.v1.train
 
 
 def cli():
@@ -50,7 +51,7 @@ def main(
 
     def get_values(path):
         start_time = None
-        iterator = tf.train.summary_iterator(str(path))
+        iterator = tensorflow.compat.v1.train.summary_iterator(str(path))
         for i in itertools.count():
             try:
                 event = next(iterator)
