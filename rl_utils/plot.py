@@ -59,7 +59,8 @@ def main(
 
             for event_path in path.glob("**/events*"):
                 print("Reading", event_path)
-                iterator = tf.train.summary_iterator(str(event_path))
+                iterator = tf.compat.v1.train.summary_iterator(str(event_path))
+
                 while True:
                     try:
                         event = next(iterator)
@@ -73,7 +74,6 @@ def main(
                         pass
                     except StopIteration:
                         break
-
 
     print("Plotting...")
     header = tags[0] if len(tags) == 1 else ""
